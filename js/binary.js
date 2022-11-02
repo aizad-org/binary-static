@@ -13300,7 +13300,7 @@ var ActiveSymbols = function () {
                     symbol_type: symbol.symbol_type,
                     is_active: !symbol.is_trading_suspended && symbol.exchange_is_open,
                     pip: symbol.pip,
-                    market: symbol.market,
+                    market: symbol.market !== 'synthetic_index' ? symbol.market : symbol.subgroup,
                     submarket: symbol.submarket
                 };
             });
@@ -21461,6 +21461,8 @@ var _common_functions = __webpack_require__(/*! ../../../_common/common_function
 
 var _localize = __webpack_require__(/*! ../../../_common/localize */ "./src/javascript/_common/localize.js");
 
+var _os_detect = __webpack_require__(/*! ../../../_common/os_detect */ "./src/javascript/_common/os_detect.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -21490,66 +21492,137 @@ var List = function List(_ref) {
     var arr = _ref.arr,
         saveRef = _ref.saveRef,
         underlying = _ref.underlying,
-        onUnderlyingClick = _ref.onUnderlyingClick;
-    return arr.map(function (_ref2, idx) {
-        var _ref3 = _slicedToArray(_ref2, 2),
-            market_code = _ref3[0],
-            obj = _ref3[1];
+        onUnderlyingClick = _ref.onUnderlyingClick,
+        groupMarkets = _ref.groupMarkets;
 
-        return _react2.default.createElement(
-            'div',
-            {
-                className: 'market',
-                key: idx,
-                id: market_code + '_market',
-                ref: saveRef.bind(null, market_code)
-            },
-            _react2.default.createElement(
-                'div',
-                { className: 'market_name' },
-                obj.name
-            ),
-            Object.entries(obj.submarkets).sort(function (a, b) {
-                return (0, _active_symbols.sortSubmarket)(a[0], b[0]);
-            }).map(function (_ref4, idx_2) {
-                var _ref5 = _slicedToArray(_ref4, 2),
-                    key = _ref5[0],
-                    submarket = _ref5[1];
-
-                return (// eslint-disable-line no-unused-vars
+    var group_markets = groupMarkets(arr);
+    return _react2.default.createElement(
+        _react2.default.Fragment,
+        null,
+        Object.keys(group_markets).map(function (item) {
+            var derived_category = group_markets[item].markets[0].key;
+            return group_markets[item].markets.map(function (obj, idx) {
+                return item === 'none' ? _react2.default.createElement(
+                    'div',
+                    { key: item },
                     _react2.default.createElement(
                         'div',
-                        { className: 'submarket', key: idx_2 },
+                        {
+                            className: 'market',
+                            key: idx,
+                            id: obj.key + '_market',
+                            ref: saveRef.bind(null, obj.key)
+                        },
                         _react2.default.createElement(
                             'div',
-                            { className: 'submarket_name' },
-                            submarket.name
+                            { className: 'market_name' },
+                            obj.name
+                        ),
+                        Object.entries(obj.submarket).sort(function (a, b) {
+                            return (0, _active_symbols.sortSubmarket)(a[0], b[0]);
+                        }).map(function (_ref2, idx_2) {
+                            var _ref3 = _slicedToArray(_ref2, 2),
+                                key = _ref3[0],
+                                submarket = _ref3[1];
+
+                            return (// eslint-disable-line no-unused-vars
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'submarket', key: idx_2 },
+                                    _react2.default.createElement(
+                                        'div',
+                                        { className: 'submarket_name' },
+                                        submarket.name
+                                    ),
+                                    _react2.default.createElement(
+                                        'div',
+                                        { className: 'symbols' },
+                                        Object.entries(submarket.symbols).map(function (_ref4) {
+                                            var _ref5 = _slicedToArray(_ref4, 2),
+                                                u_code = _ref5[0],
+                                                symbol = _ref5[1];
+
+                                            return _react2.default.createElement(
+                                                'div',
+                                                {
+                                                    className: 'symbol_name ' + (u_code === underlying ? 'active' : ''),
+                                                    key: u_code,
+                                                    id: u_code,
+                                                    onClick: onUnderlyingClick.bind(null, u_code, obj.key)
+                                                },
+                                                symbol.display
+                                            );
+                                        })
+                                    )
+                                )
+                            );
+                        })
+                    )
+                ) : _react2.default.createElement(
+                    'div',
+                    { key: item },
+                    _react2.default.createElement(
+                        'div',
+                        {
+                            className: 'market',
+                            key: idx,
+                            id: obj.key + '_market',
+                            ref: saveRef.bind(null, obj.key)
+                        },
+                        obj.key === derived_category && (0, _os_detect.isMobile)() && _react2.default.createElement(
+                            'div',
+                            { className: 'label' },
+                            obj.subgroup_name
                         ),
                         _react2.default.createElement(
                             'div',
-                            { className: 'symbols' },
-                            Object.entries(submarket.symbols).map(function (_ref6) {
-                                var _ref7 = _slicedToArray(_ref6, 2),
-                                    u_code = _ref7[0],
-                                    symbol = _ref7[1];
+                            { className: 'market_name' },
+                            obj.name
+                        ),
+                        Object.entries(obj.submarket).sort(function (a, b) {
+                            return (0, _active_symbols.sortSubmarket)(a[0], b[0]);
+                        }).map(function (_ref6, idx_2) {
+                            var _ref7 = _slicedToArray(_ref6, 2),
+                                key = _ref7[0],
+                                submarket = _ref7[1];
 
-                                return _react2.default.createElement(
+                            return (// eslint-disable-line no-unused-vars
+                                _react2.default.createElement(
                                     'div',
-                                    {
-                                        className: 'symbol_name ' + (u_code === underlying ? 'active' : ''),
-                                        key: u_code,
-                                        id: u_code,
-                                        onClick: onUnderlyingClick.bind(null, u_code, market_code)
-                                    },
-                                    symbol.display
-                                );
-                            })
-                        )
+                                    { className: 'submarket', key: idx_2 },
+                                    _react2.default.createElement(
+                                        'div',
+                                        { className: 'submarket_name' },
+                                        submarket.name
+                                    ),
+                                    _react2.default.createElement(
+                                        'div',
+                                        { className: 'symbols' },
+                                        Object.entries(submarket.symbols).map(function (_ref8) {
+                                            var _ref9 = _slicedToArray(_ref8, 2),
+                                                u_code = _ref9[0],
+                                                symbol = _ref9[1];
+
+                                            return _react2.default.createElement(
+                                                'div',
+                                                {
+                                                    className: 'symbol_name ' + (u_code === underlying ? 'active' : ''),
+                                                    key: u_code,
+                                                    id: u_code,
+                                                    onClick: onUnderlyingClick.bind(null, u_code, obj.key)
+                                                },
+                                                symbol.display
+                                            );
+                                        })
+                                    )
+                                )
+                            );
+                        })
                     )
                 );
-            })
-        );
-    });
+            });
+        })
+    );
 };
 
 var Markets = (_temp = _class = function (_React$Component) {
@@ -21750,8 +21823,8 @@ var Markets = (_temp = _class = function (_React$Component) {
                                             _react2.default.createElement(
                                                 'div',
                                                 {
-                                                    className: (0, _classnames2.default)('market accordion-label', {
-                                                        'accordion-label--active': open_accordion || subgroup_active
+                                                    className: (0, _classnames2.default)('market', {
+                                                        'active': subgroup_active
                                                     }),
                                                     onClick: toggleAccordion || (subgroup_active ? toggleAccordion : '')
                                                 },
@@ -21765,7 +21838,7 @@ var Markets = (_temp = _class = function (_React$Component) {
                                             ),
                                             _react2.default.createElement(
                                                 'div',
-                                                { className: '' + (open_accordion ? 'accordion-content--active' : 'accordion-content') },
+                                                { className: (0, _classnames2.default)('accordion-content', { 'show': open_accordion, 'active': open_accordion && subgroup_active }) },
                                                 group_markets[item].markets.map(function (m) {
                                                     return _react2.default.createElement(
                                                         'div',
@@ -21819,7 +21892,7 @@ var Markets = (_temp = _class = function (_React$Component) {
                                                     key: derived_category,
                                                     'data-market': derived_category,
                                                     className: (0, _classnames2.default)('', {
-                                                        'active': active_market === derived_category || subgroup_active
+                                                        'active': subgroup_active
                                                     })
                                                 },
                                                 _react2.default.createElement('span', { className: 'icon synthetic_index ' + (active_market === derived_category || subgroup_active ? 'active' : '') })
@@ -21840,7 +21913,8 @@ var Markets = (_temp = _class = function (_React$Component) {
                                 arr: markets,
                                 saveRef: saveMarketRef,
                                 underlying: underlying.symbol,
-                                onUnderlyingClick: onUnderlyingClick
+                                onUnderlyingClick: onUnderlyingClick,
+                                groupMarkets: groupMarkets
                             })
                         )
                     )
@@ -21858,7 +21932,8 @@ var Markets = (_temp = _class = function (_React$Component) {
             open: false,
             query: '',
             markets: _this2.markets_all,
-            open_accordion: false
+            open_accordion: false,
+            subgroup_active: false
         });
     };
 
@@ -21891,10 +21966,10 @@ var Markets = (_temp = _class = function (_React$Component) {
         var arr = [];
         var curr_market = null;
 
-        Object.entries(market_nodes).forEach(function (_ref8) {
-            var _ref9 = _slicedToArray(_ref8, 2),
-                key = _ref9[0],
-                node = _ref9[1];
+        Object.entries(market_nodes).forEach(function (_ref10) {
+            var _ref11 = _slicedToArray(_ref10, 2),
+                key = _ref11[0],
+                node = _ref11[1];
 
             if (node && node.offsetParent && node.offsetTop - 41 <= position) {
                 arr.push(key);
@@ -22025,6 +22100,7 @@ var Markets = (_temp = _class = function (_React$Component) {
                 node.removeAttribute('style');
                 node.children[0].removeAttribute('style');
                 node.children[0].classList.remove(class_under, class_sticky);
+                node.children[1].classList.remove(class_under, class_sticky);
             });
             _this2.references.last_viewed_node = current_viewed_node;
         }
@@ -22037,7 +22113,11 @@ var Markets = (_temp = _class = function (_React$Component) {
             current_viewed_node.children[0].removeAttribute('style');
             current_viewed_node.children[0].classList.remove(class_under);
         }
-        current_viewed_node.children[0].classList.add(class_sticky);
+        if (Object.values(current_viewed_node.children[0].classList).includes('label')) {
+            current_viewed_node.children[1].classList.add(class_sticky);
+        } else {
+            current_viewed_node.children[0].classList.add(class_sticky);
+        }
         current_viewed_node.style.paddingTop = TITLE_HEIGHT + 'px';
     };
 
@@ -22052,49 +22132,50 @@ var Markets = (_temp = _class = function (_React$Component) {
 
     this.groupMarkets = function (markets) {
         var market_group = {};
-        markets.forEach(function (_ref10) {
-            var _ref11 = _slicedToArray(_ref10, 2),
-                key = _ref11[0],
-                obj = _ref11[1];
+        markets.forEach(function (_ref12) {
+            var _ref13 = _slicedToArray(_ref12, 2),
+                key = _ref13[0],
+                obj = _ref13[1];
 
             if (market_group[obj.subgroup]) {
-                market_group[obj.subgroup].markets.push({ name: obj.name, key: key, subgroup_name: obj.subgroup_name });
+                market_group[obj.subgroup].markets.push({ name: obj.name, key: key, subgroup_name: obj.subgroup_name, submarket: obj.submarkets });
             } else {
-                market_group[obj.subgroup] = { markets: [{ name: obj.name, key: key, subgroup_name: obj.subgroup_name }] };
+                market_group[obj.subgroup] = { markets: [{ name: obj.name, key: key, subgroup_name: obj.subgroup_name, submarket: obj.submarkets }]
+                };
             }
         });
         return market_group;
     };
 
-    this.searchSymbols = function (_ref12) {
-        var query = _ref12.target.value;
+    this.searchSymbols = function (_ref14) {
+        var query = _ref14.target.value;
 
         _this2.setState({ query: query });
         scrollToPosition(_this2.references.list, 0, 0);
         var markets_all = _this2.markets_all;
         if (!query) {
-            _this2.setState({ markets: markets_all });
+            _this2.setState({ markets: markets_all, subgroup_active: false, open_accordion: false });
             return;
         }
         var filter_markets = [];
-        markets_all.map(function (_ref13) {
-            var _ref14 = _slicedToArray(_ref13, 2),
-                key = _ref14[0],
-                market = _ref14[1];
+        markets_all.map(function (_ref15) {
+            var _ref16 = _slicedToArray(_ref15, 2),
+                key = _ref16[0],
+                market = _ref16[1];
 
             var found_for_market = false; // To check market contains any matching underlying.
             var filter_submarkets = {};
-            Object.entries(market.submarkets).map(function (_ref15) {
-                var _ref16 = _slicedToArray(_ref15, 2),
-                    key_2 = _ref16[0],
-                    submarket = _ref16[1];
+            Object.entries(market.submarkets).map(function (_ref17) {
+                var _ref18 = _slicedToArray(_ref17, 2),
+                    key_2 = _ref18[0],
+                    submarket = _ref18[1];
 
                 var found_for_submarket = false; // Same as found for market
                 var filter_symbols = {};
-                Object.entries(submarket.symbols).map(function (_ref17) {
-                    var _ref18 = _slicedToArray(_ref17, 2),
-                        key_3 = _ref18[0],
-                        symbol = _ref18[1];
+                Object.entries(submarket.symbols).map(function (_ref19) {
+                    var _ref20 = _slicedToArray(_ref19, 2),
+                        key_3 = _ref20[0],
+                        symbol = _ref20[1];
 
                     var queries = query.split(',');
                     if (queries.reduce(function (a, b) {
@@ -22117,11 +22198,6 @@ var Markets = (_temp = _class = function (_React$Component) {
                     _this2.setState({
                         subgroup_active: true,
                         open_accordion: true
-                    });
-                } else {
-                    _this2.setState({
-                        subgroup_active: false,
-                        open_accordion: false
                     });
                 }
                 filter_markets.push([key, market_copy]);
@@ -29339,11 +29415,11 @@ var isProduction = function isProduction() {
     return new RegExp('^(' + all_domains.join('|') + ')$', 'i').test(window.location.hostname);
 };
 
-var binary_desktop_app_id = 31255;
+var binary_desktop_app_id = 31258;
 
 var getAppId = function getAppId() {
     var app_id = null;
-    var user_app_id = '33232'; // you can insert Application ID of your registered application here
+    var user_app_id = '31258'; // you can insert Application ID of your registered application here
     var config_app_id = window.localStorage.getItem('config.app_id');
     var is_new_app = /\/app\//.test(window.location.pathname);
     if (config_app_id) {

@@ -2746,19 +2746,16 @@ input {
           -webkit-box-direction: normal;
               -ms-flex-direction: column;
                   flex-direction: column; }
-          .markets .markets_dropdown .markets_view .markets_column .accordion .accordion-label {
-            font-weight: 400; }
-            .markets .markets_dropdown .markets_view .markets_column .accordion .accordion-label--active {
-              text-decoration: none;
-              font-weight: 600; }
           .markets .markets_dropdown .markets_view .markets_column .accordion .accordion-content {
             -webkit-box-orient: vertical;
             -webkit-box-direction: normal;
                 -ms-flex-direction: column;
                     flex-direction: column;
             display: none; }
-            .markets .markets_dropdown .markets_view .markets_column .accordion .accordion-content--active {
+            .markets .markets_dropdown .markets_view .markets_column .accordion .accordion-content.show {
               display: block; }
+            .markets .markets_dropdown .markets_view .markets_column .accordion .accordion-content.active {
+              background-color: var(--general-main-1); }
         .markets .markets_dropdown .markets_view .markets_column .mobile {
           display: none; }
           .markets .markets_dropdown .markets_view .markets_column .mobile ul {
@@ -2864,6 +2861,10 @@ input {
           padding-bottom: 40px; }
           .markets .markets_dropdown .markets_view .list .market:last-of-type {
             padding-bottom: 80px; }
+          .markets .markets_dropdown .markets_view .list .market .label {
+            font-size: 20px;
+            padding: 16px 0px;
+            font-weight: 700; }
           .markets .markets_dropdown .markets_view .list .market .market_name {
             font-size: 18px;
             padding: 10px 0;
