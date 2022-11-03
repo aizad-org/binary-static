@@ -21504,7 +21504,7 @@ var List = function List(_ref) {
             return group_markets[item].markets.map(function (obj, idx) {
                 return item === 'none' ? _react2.default.createElement(
                     'div',
-                    { key: item },
+                    { key: item + '_' + idx },
                     _react2.default.createElement(
                         'div',
                         {
@@ -21560,7 +21560,7 @@ var List = function List(_ref) {
                     )
                 ) : _react2.default.createElement(
                     'div',
-                    { key: item },
+                    { key: item + '_' + idx },
                     _react2.default.createElement(
                         'div',
                         {
@@ -21791,10 +21791,10 @@ var Markets = (_temp = _class = function (_React$Component) {
                             _react2.default.createElement(
                                 'div',
                                 { className: 'desktop' },
-                                Object.keys(group_markets).map(function (item) {
+                                Object.keys(group_markets).map(function (item, idx) {
                                     return _react2.default.createElement(
                                         'div',
-                                        { key: item },
+                                        { key: item + '_' + idx },
                                         item === 'none' ? _react2.default.createElement(
                                             'div',
                                             null,
@@ -21818,7 +21818,7 @@ var Markets = (_temp = _class = function (_React$Component) {
                                             'div',
                                             {
                                                 className: 'accordion',
-                                                key: item
+                                                key: item + '_' + idx
                                             },
                                             _react2.default.createElement(
                                                 'div',
@@ -21843,7 +21843,7 @@ var Markets = (_temp = _class = function (_React$Component) {
                                                     return _react2.default.createElement(
                                                         'div',
                                                         {
-                                                            className: 'subgroup market ' + (active_market === m.key ? 'active' : ''),
+                                                            className: 'subgroup market ' + (active_market === m.key ? 'subgroup-active' : ''),
                                                             key: m.key,
                                                             onClick: scrollToMarket.bind(null, '' + m.key)
                                                         },
@@ -22194,13 +22194,18 @@ var Markets = (_temp = _class = function (_React$Component) {
             if (found_for_market) {
                 var market_copy = JSON.parse(JSON.stringify(market));
                 market_copy.submarkets = filter_submarkets;
-                if (_this2.keys_arr.includes(key)) {
+                filter_markets.push([key, market_copy]);
+                if (_this2.keys_arr.includes(filter_markets[0][0])) {
                     _this2.setState({
                         subgroup_active: true,
                         open_accordion: true
                     });
+                } else {
+                    _this2.setState({
+                        subgroup_active: false,
+                        open_accordion: false
+                    });
                 }
-                filter_markets.push([key, market_copy]);
             }
         });
 

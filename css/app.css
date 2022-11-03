@@ -2734,6 +2734,10 @@ input {
             font-weight: 600;
             background-color: var(--general-main-1);
             border-left: 2px solid var(--brand-red-coral); }
+          .markets .markets_dropdown .markets_view .markets_column .desktop .market.subgroup-active {
+            text-decoration: none;
+            font-weight: 600;
+            background-color: var(--general-main-1); }
           .markets .markets_dropdown .markets_view .markets_column .desktop .market.subgroup {
             padding-left: 25px; }
           .markets .markets_dropdown .markets_view .markets_column .desktop .market span:nth-of-type(2) {
