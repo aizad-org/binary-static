@@ -21564,7 +21564,7 @@ var List = function List(_ref) {
                     _react2.default.createElement(
                         'div',
                         {
-                            className: 'market',
+                            className: 'subgroup',
                             key: idx,
                             id: obj.key + '_market',
                             ref: saveRef.bind(null, obj.key)
@@ -21576,7 +21576,7 @@ var List = function List(_ref) {
                         ),
                         _react2.default.createElement(
                             'div',
-                            { className: 'market_name' },
+                            { className: 'subgroup_name' },
                             obj.name
                         ),
                         Object.entries(obj.submarket).sort(function (a, b) {
@@ -22088,6 +22088,7 @@ var Markets = (_temp = _class = function (_React$Component) {
         var class_under = 'put_under';
         var TITLE_HEIGHT = 40;
         var DEFAULT_TOP = _this2.references.list.offsetTop;
+        var SUBGROUP_LABEL = document.getElementsByClassName('label');
 
         var current_viewed_node = Object.values(market_nodes).find(function (node) {
             return node.dataset.offsetTop <= position && +node.dataset.offsetHeight + +node.dataset.offsetTop > position;
@@ -22113,11 +22114,12 @@ var Markets = (_temp = _class = function (_React$Component) {
             current_viewed_node.children[0].removeAttribute('style');
             current_viewed_node.children[0].classList.remove(class_under);
         }
-        if (Object.values(current_viewed_node.children[0].classList).includes('label')) {
-            current_viewed_node.children[1].classList.add(class_sticky);
-        } else {
-            current_viewed_node.children[0].classList.add(class_sticky);
+        if ((0, _os_detect.isMobile)() && current_viewed_node.classList.contains('subgroup') && !current_viewed_node.classList.contains('label')) {
+            SUBGROUP_LABEL[0].classList.add(class_sticky);
+            SUBGROUP_LABEL[0].removeAttribute('style');
+            SUBGROUP_LABEL[0].classList.remove(class_under);
         }
+        current_viewed_node.children[0].classList.add(class_sticky);
         current_viewed_node.style.paddingTop = TITLE_HEIGHT + 'px';
     };
 
