@@ -21427,6 +21427,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.init = undefined;
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _class, _temp, _initialiseProps;
@@ -21564,7 +21566,7 @@ var List = function List(_ref) {
                     _react2.default.createElement(
                         'div',
                         {
-                            className: 'subgroup',
+                            className: 'market',
                             key: idx,
                             id: obj.key + '_market',
                             ref: saveRef.bind(null, obj.key)
@@ -21576,7 +21578,7 @@ var List = function List(_ref) {
                         ),
                         _react2.default.createElement(
                             'div',
-                            { className: 'subgroup_name' },
+                            { className: 'market_name' },
                             obj.name
                         ),
                         Object.entries(obj.submarket).sort(function (a, b) {
@@ -21826,7 +21828,9 @@ var Markets = (_temp = _class = function (_React$Component) {
                                                     className: (0, _classnames2.default)('market', {
                                                         'active': subgroup_active
                                                     }),
-                                                    onClick: toggleAccordion || (subgroup_active ? toggleAccordion : '')
+                                                    onClick: function onClick() {
+                                                        return toggleAccordion();
+                                                    }
                                                 },
                                                 _react2.default.createElement('span', { className: 'icon synthetic_index ' + (open_accordion ? 'active' : '') }),
                                                 _react2.default.createElement(
@@ -21938,7 +21942,11 @@ var Markets = (_temp = _class = function (_React$Component) {
     };
 
     this.toggleAccordion = function () {
-        _this2.setState({ open_accordion: !_this2.state.open_accordion });
+        _this2.setState(function (prevState) {
+            return _extends({}, prevState, {
+                open_accordion: !prevState.open_accordion
+            });
+        });
     };
 
     this.getCurrentUnderlying = function () {
@@ -21980,8 +21988,7 @@ var Markets = (_temp = _class = function (_React$Component) {
                     });
                 } else {
                     _this2.setState({
-                        subgroup_active: false,
-                        open_accordion: false
+                        subgroup_active: false
                     });
                 }
             }
@@ -22088,7 +22095,6 @@ var Markets = (_temp = _class = function (_React$Component) {
         var class_under = 'put_under';
         var TITLE_HEIGHT = 40;
         var DEFAULT_TOP = _this2.references.list.offsetTop;
-        var SUBGROUP_LABEL = document.getElementsByClassName('label');
 
         var current_viewed_node = Object.values(market_nodes).find(function (node) {
             return node.dataset.offsetTop <= position && +node.dataset.offsetHeight + +node.dataset.offsetTop > position;
@@ -22114,12 +22120,11 @@ var Markets = (_temp = _class = function (_React$Component) {
             current_viewed_node.children[0].removeAttribute('style');
             current_viewed_node.children[0].classList.remove(class_under);
         }
-        if ((0, _os_detect.isMobile)() && current_viewed_node.classList.contains('subgroup') && !current_viewed_node.classList.contains('label')) {
-            SUBGROUP_LABEL[0].classList.add(class_sticky);
-            SUBGROUP_LABEL[0].removeAttribute('style');
-            SUBGROUP_LABEL[0].classList.remove(class_under);
+        if (Object.values(current_viewed_node.children[0].classList).includes('label')) {
+            current_viewed_node.children[1].classList.add(class_sticky);
+        } else {
+            current_viewed_node.children[0].classList.add(class_sticky);
         }
-        current_viewed_node.children[0].classList.add(class_sticky);
         current_viewed_node.style.paddingTop = TITLE_HEIGHT + 'px';
     };
 
