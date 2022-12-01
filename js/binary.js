@@ -21427,8 +21427,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.init = undefined;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _class, _temp, _initialiseProps;
@@ -21828,9 +21826,7 @@ var Markets = (_temp = _class = function (_React$Component) {
                                                     className: (0, _classnames2.default)('market', {
                                                         'active': subgroup_active
                                                     }),
-                                                    onClick: function onClick() {
-                                                        return toggleAccordion();
-                                                    }
+                                                    onClick: toggleAccordion || (subgroup_active ? toggleAccordion : '')
                                                 },
                                                 _react2.default.createElement('span', { className: 'icon synthetic_index ' + (open_accordion ? 'active' : '') }),
                                                 _react2.default.createElement(
@@ -21942,11 +21938,7 @@ var Markets = (_temp = _class = function (_React$Component) {
     };
 
     this.toggleAccordion = function () {
-        _this2.setState(function (prevState) {
-            return _extends({}, prevState, {
-                open_accordion: !prevState.open_accordion
-            });
-        });
+        _this2.setState({ open_accordion: !_this2.state.open_accordion });
     };
 
     this.getCurrentUnderlying = function () {
@@ -21988,7 +21980,8 @@ var Markets = (_temp = _class = function (_React$Component) {
                     });
                 } else {
                     _this2.setState({
-                        subgroup_active: false
+                        subgroup_active: false,
+                        open_accordion: false
                     });
                 }
             }
@@ -25426,6 +25419,7 @@ var TopUpVirtualPopup = function () {
 
     return {
         init: init,
+        doTopUp: doTopUp,
         shouldShow: shouldShowPopup,
         show: showTopUpPopup
     };
@@ -28183,6 +28177,8 @@ var BinarySocket = __webpack_require__(/*! ../../base/socket */ "./src/javascrip
 var formatMoney = __webpack_require__(/*! ../../common/currency */ "./src/javascript/app/common/currency.js").formatMoney;
 var TopUpVirtualPopup = __webpack_require__(/*! ../../pages/user/account/top_up_virtual/pop_up */ "./src/javascript/app/pages/user/account/top_up_virtual/pop_up.js");
 var getPropertyValue = __webpack_require__(/*! ../../../_common/utility */ "./src/javascript/_common/utility.js").getPropertyValue;
+var createElement = __webpack_require__(/*! ../../../_common/utility */ "./src/javascript/_common/utility.js").createElement;
+var localize = __webpack_require__(/*! ../../../_common/localize */ "./src/javascript/_common/localize.js").localize;
 
 var updateBalance = function updateBalance(response) {
     if (getPropertyValue(response, 'error')) {
@@ -28201,14 +28197,25 @@ var updateBalance = function updateBalance(response) {
 
         var updateBalanceByAccountId = function updateBalanceByAccountId(account_id, updated_balance, account_currency) {
             var el_balance_span = document.querySelector('.account__switcher-balance-' + account_id);
+            var reset_button = createElement('button', { text: localize('Reset balance'), class: 'account__switcher-balance btn btn--secondary btn__small reset_btn' });
+
+            var is_virtual = /^VRT/.test(account_id);
+            var is_current = Client.get('loginid') === account_id;
 
             if (el_balance_span) {
                 var display_balance = formatMoney(account_currency, updated_balance);
 
                 el_balance_span.innerHTML = display_balance;
 
-                var is_virtual = /^VRT/.test(account_id);
-                var is_current = Client.get('loginid') === account_id;
+                // show reset button
+                if (updated_balance !== 10000 && is_virtual && is_current) {
+                    el_balance_span.innerHTML = null;
+                    el_balance_span.appendChild(reset_button);
+                    reset_button.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        TopUpVirtualPopup.doTopUp();
+                    });
+                }
 
                 if (is_current) {
                     document.getElementById('header__acc-balance').innerHTML = display_balance;
